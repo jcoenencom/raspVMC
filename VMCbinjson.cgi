@@ -34,7 +34,7 @@ rcvd.getfanconfig(sock)
 rcvd.getdevinfo(sock)
 rcvd.getinputs(sock)
 rcvd.getbypass(sock)
-
+rcvd.getvalve(sock)
 
 print "Status: 200 OK"
 print "Content-Type: application/json"
