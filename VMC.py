@@ -316,12 +316,9 @@ class VMC:
                 return(self)
 
         def getfanconfig(self,socket):
-		print 'getfanconfig with socket ', socket
                 self.cmd = b'\xcd'
                 self.CFrame()
-		print binascii.hexlify(self.frame)
                 socket.sendall(self.FullFrame())
-		print 'sent'
                 data = socket.recv(64)
                 if len(data) >0:
                         result = FFrame.match(data)
