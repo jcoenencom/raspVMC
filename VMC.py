@@ -1,5 +1,6 @@
 import binascii
 import socket
+import time
 import re
 
 class AutoVivification(dict):
@@ -315,9 +316,12 @@ class VMC:
                 return(self)
 
         def getfanconfig(self,socket):
+		print 'getfanconfig with socket ', socket
                 self.cmd = b'\xcd'
                 self.CFrame()
+		print binascii.hexlify(self.frame)
                 socket.sendall(self.FullFrame())
+		print 'sent'
                 data = socket.recv(64)
                 if len(data) >0:
                         result = FFrame.match(data)
@@ -396,6 +400,19 @@ class VMC:
                                 self.getvalue.get(self.cmd,self.default)(self)
 
                 return(self)
+
+	def setspeed(self,socket,speed):
+		if speed>=0 and speed<=3:
+			self.cmd=b'\x99'
+			self.datalen=1
+			self.CMFrame(chr(1+int(speed)))
+	                socket.sendall(self.FullFrame())
+			print 'command sent'
+			time.sleep(0.25)
+			print 'calling getfanconfig on socket', socket
+			self.getfanconfig(socket)
+		return self
+
 
 	temperature=AutoVivification()
 	erreurcodes={}
