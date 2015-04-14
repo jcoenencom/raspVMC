@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="../jsoneditor.css">
+  <script type="text/javascript" src="../jsoneditor.js"></script>
+  <style type="text/css">
+    body {
+      font: 11pt arial;
+    }
+    #jsoneditor {
+      width: 500px;
+    }
+  </style>
+</head>
+<body>
+<p>
+  This editor is read-only (mode='viewer').
+</p>
+<div id="jsoneditor"></div>
+
+<script type="text/javascript" >
+  var container = document.getElementById('jsoneditor');
+
+  var options = {
+    mode: 'view'
+  };
+
+    var httpRequest = new XMLHttpRequest();
+    var ref = (new Date).getTime();
+    httpRequest.open('GET', '/cgi-bin/VMCbinjson.cgi?time='+ref, false);
+    httpRequest.send(null);
+    var json = JSON.parse(httpRequest.responseText);
+
+  var editor = new jsoneditor.JSONEditor(container, options, json);
+</script>
+</body>
+</html>

@@ -1,0 +1,357 @@
+<html>
+
+  <style type="text/css">
+    body {
+      font: 11pt arial;
+    }
+    #jsoneditor {
+      width: 500px;
+      height: 200px;
+    }
+  </style>
+
+
+ <head>  
+
+<script type="application/javascript">  
+
+var toggle = 0;
+var tin = new Array(103);
+var meteo = new Array(50);
+var switchimg = new Array('switchedoff.jpg','switchedon.jpg','switchedoff.jpg','switchedoff.jpg');
+var switching = new Image();
+var swstate;
+var count =0;
+
+function init() {
+
+//switching.src=switchimg[swstate];
+
+//clearCanvas();
+draw();
+
+var ctx = document.getElementById('canvas').getContext('2d');
+var canvas = document.getElementById('canvas');
+
+canvas.addEventListener('mousedown', on_canvas_click, false);
+
+swstate = parseInt(tin[76])-2;
+
+//switching.src=switchimg[swstate];
+
+//switching.onload = function(){  
+//         ctx.drawImage(switching,0,0);
+//	}
+}
+
+function on_canvas_click(ev) {
+
+    var ctx = document.getElementById('canvas').getContext('2d');
+    var x = ev.clientX - ctx.canvas.offsetLeft;
+    var y = ev.clientY - ctx.canvas.offsetTop;
+//	alert( x+'  '+y);
+    if ((x <= 42) & (y <= 60)) {action();}
+
+    // ... x,y are the click coordinates relative to the
+    // canvas itself
+}
+
+function clearCanvas(){
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function action() {
+//	alert("action");
+	count++;
+  if (count > 3) {
+	alert('limite de 3 actions ;)')
+	} else {
+	if (swstate == 0) {
+                swstate = 1;
+        } else {
+                swstate = 0;
+        }
+	var setspeed=swstate+1;
+	var ctrl = getBusyOverlay(document.getElementById('viewport'),overlay,busy);
+	document.getElementById('message').innerHTML="loading actual values";
+	var httpRequest = new XMLHttpRequest();
+	httpRequest.open('GET', '/cgi-bin/VMCsetspeed.cgi?speed='+setspeed, false);
+	httpRequest.send(null);
+	reply = httpRequest.responseText;
+	document.getElementById('message').innerHTML="data received";
+	ctrl.remove();
+//	alert(reply+'\nwait 2 second for panel update');
+	init();
+//	switching.src=switchimg[swstate];
+	setTimeout("init()",2000);
+//	switching.src=switchimg[swstate];
+}
+
+}
+
+function setspeed(speed) {
+        var httpRequest = new XMLHttpRequest();
+	var ref = (new Date).getTime();
+	document.getElementById('message').innerHTML="setting speed";
+        httpRequest.open('GET', '/cgi-bin/VMCsetspeed.cgi?speed='+speed+'&time='+ref, false);
+        httpRequest.send(null);
+        reply = httpRequest.responseText;
+	document.getElementById('message').innerHTML=reply;
+//      alert(reply+'\nwait 2 second for panel update');
+        init();
+//      switching.src=switchimg[swstate];
+        setTimeout("init()",2000);
+//      switching.src=switchimg[swstate];
+
+}
+
+function resetflt() {
+        var httpRequest = new XMLHttpRequest();
+        var ref = (new Date).getTime();
+        document.getElementById('message').innerHTML="Reset filter counter";
+        httpRequest.open('GET', '/cgi-bin/VMCresetfilter.cgi?time='+ref, false);
+        httpRequest.send(null);
+        reply = httpRequest.responseText;
+        document.getElementById('message').innerHTML=reply;
+//      alert(reply+'\nwait 2 second for panel update');
+        init();
+//      switching.src=switchimg[swstate];
+        setTimeout("init()",2000);
+//      switching.src=switchimg[swstate];
+
+}
+
+
+function getTin() {
+
+
+document.getElementById('message').innerHTML="loading actual values";
+
+var httpRequest = new XMLHttpRequest();
+var ref = (new Date).getTime();
+
+//alert("Tin");
+
+httpRequest.open('GET', '/cgi-bin/VMCbinjson.cgi?time='+ref, false);
+httpRequest.send(null);
+//alert(httpRequest.responseText);
+tin = JSON.parse(httpRequest.responseText);
+
+editor.set(tin);
+
+
+//alert(Json);
+
+
+var httpRequest = new XMLHttpRequest();
+httpRequest.open('GET', '/cgi-bin/meteo.cgi?time='+ref, false);
+httpRequest.send(null);
+meteo = httpRequest.responseText.split(' ');
+var ref = new Date();
+document.getElementById('message').innerHTML="Value received at "+ref.toLocaleTimeString();
+}
+
+function draw() {  
+ var canvas = document.getElementById("canvas");  
+ var ctx = canvas.getContext("2d");  
+ var BPstatus = ["Closed","Opened"];
+ var x = 100;
+ var y = 100;
+
+ getTin();
+ clearCanvas();
+ var rndneuf = ((tin.data.temperature.Tsoufflage - tin.data.temperature.Tairneuf) / (tin.data.temperature.Trepris - tin.data.temperature.Tairneuf))*100;
+ var rndXtrait = ( (tin.data.temperature.Trepris - tin.data.temperature.Textrait) / (tin.data.temperature.Trepris - tin.data.temperature.Tairneuf)) *100;
+// alert("Rendement ="+rndneuf.toFixed(2));
+
+ var BP =tin.data.valvesetat.bypass/100;
+ var Bypass = BPstatus[BP];
+ arrow(ctx,x,y-25,1,'cyan');
+ arrow(ctx,x+150,y,0,'cyan');
+
+ ctx.strokeStyle = 'black';
+ ctx.strokeRect(x,y+100,200,200);
+
+ arrow(ctx,x,y+300,1,'red');
+ arrow(ctx,x+150,y+325,0,'red');
+
+
+ ctx.font = "15pt Calibri";
+ ctx.textAlign = "center";
+ var vitesse = tin.config.ventilateurs.vitesse;
+
+ ctx.strokeText('vitesse: '+vitesse,x+75,y-80);
+ name =(typeof(tin.device) == "undefined") ? "defined":"undef"
+ ctx.strokeText("VMC Double Flux",x+100,y+130);
+ ctx.strokeText((typeof(tin.device) != "undefined") ? tin.device.name:"undef",x+100,y+150);
+ ctx.strokeText("Bypass: "+Bypass,x+100,y+170);
+ ctx.strokeText("mode: "+tin.data.bypass.mode,x+100,y+190);
+ ctx.strokeText("T confort "+tin.data.temperature.Tconfort,x+100,y+210);
+ ctx.strokeText("Filtres: "+tin.data.usage.filtres+" Heures",x+100,y+230);
+ ctx.font = "12pt Calibri";
+ ctx.strokeText("Rndmt/Neuf: "+rndneuf.toFixed(2)+ " %", x+100,y+260);
+ ctx.strokeText("Rndmt/Xtrait: "+rndXtrait.toFixed(2)+ " %", x+100,y+280);
+ ctx.strokeText(tin.data.temperature.Tairneuf,x+25,y+50);
+ ctx.strokeText(tin.data.temperature.Textrait,x+175,y+50);
+ ctx.strokeText(tin.data.temperature.Tsoufflage,x+25,y+375);
+ ctx.strokeText(tin.data.temperature.Trepris,x+175,y+375);
+
+ ctx.strokeText ('L1',x+50,y-60);
+ interupteur(ctx,x+75,y-60,tin.data.etatswitches.L1);
+ ctx.strokeText('L2',x+50,y-40);
+ interupteur(ctx,x+75,y-40,tin.data.etatswitches.L2)
+
+ ctx.font = "13pt Calibri";
+ ctx.strokeText(tin.data.ventilateurs.soufflagepourcent+'%',x-50,y+200);
+ var num = parseFloat(tin.data.ventilateurs.soufflagerpm).toFixed(2);
+ ctx.strokeText(num.toString()+' rpm',x-50,y+220);
+
+ ctx.strokeText(tin.data.ventilateurs.extraitpourcent+'%',x+250,y+200);
+var num = parseFloat(tin.data.ventilateurs.extraitrpm).toFixed(2);
+ ctx.strokeText(num+' rpm',x+250,y+220);
+
+
+ ctx.strokeText(meteo[0]+' C',x+10,y-30);
+
+}  
+
+function interupteur(ctx, x,y, state) {
+
+var end = Math.PI * 2;
+ctx.beginPath();
+	if (state == 'OFF') {
+		ctx.arc(x,y,2,0,end,0);
+		ctx.lineTo(x+20,y);
+		ctx.arc(x+20,y,2,0,end,0);
+		ctx.lineTo(x+34,y-14);
+		ctx.moveTo(x+40,y);
+		ctx.arc(x+40,y,2,0,end,0);
+		ctx.lineTo(x+60,y);
+		ctx.arc(x+60,y,2,0,end,0);
+	} else {
+                ctx.arc(x,y,2,0,end,0);
+                ctx.lineTo(x+20,y);
+                ctx.arc(x+20,y,2,0,end,0);
+                ctx.lineTo(x+40,y);
+                ctx.arc(x+40,y,2,0,end,0);
+                ctx.lineTo(x+60,y);
+                ctx.arc(x+60,y,2,0,end,0);
+        }
+
+ctx.closePath();
+ctx.stroke();
+}
+
+function arrow(ctx,x,y,dir, colour){
+
+	if (dir == 0) {
+		ctx.fillStyle = colour;
+		ctx.fillRect (x, y, 50, 100);
+		ctx.beginPath();
+		ctx.moveTo(x,y);
+		ctx.lineTo(x-12,y);
+		ctx.lineTo(x+25,y-25);
+		ctx.lineTo(x+62,y);
+		ctx.closePath();
+		ctx.fill();
+	} else {
+	        ctx.fillStyle = colour;
+                ctx.fillRect (x, y, 50, 100);
+                ctx.beginPath();
+                ctx.moveTo(x,y+100);
+                ctx.lineTo(x-12,y+100);
+                ctx.lineTo(x+25,y+25+100);
+                ctx.lineTo(x+62,y+100);
+                ctx.closePath();
+                ctx.fill();
+	}
+}
+
+function colour() {
+
+ var canvas = document.getElementById("canvas");
+ var ctx = canvas.getContext("2d");
+
+ var x = 100;
+ var y = 100;
+ var Airin = 'red';
+ var Airout = 'red' ;
+
+ if (toggle == 0) {
+	toggle=1;
+	Airin ='red';
+	Airout = 'blue';
+	} else {
+        toggle=0;
+        Airin ='blue';
+        Airout = 'red';
+}
+
+ arrow(ctx,x,y-25,1,Airin);
+ arrow(ctx,x+150,y,0,Airin);
+
+ ctx.strokeStyle = 'black';
+ ctx.strokeRect(x,y+100,200,200);
+
+ arrow(ctx,x,y+300,1,Airout);
+ arrow(ctx,x+150,y+325,0,Airout);
+
+}
+
+</script>  
+ </head>  
+ <body onload="init()">  
+   <canvas id="canvas" width="640" height="540" ></canvas>  
+ </body>
+<script type="text/javascript" src="cvi_busy_lib.js"></script> 
+<div id=buttons">
+	<button id="absent" value="0" style="background-color:yellow; margin-left: 70px;">
+		absent
+	</button>
+	<button id="low" value="1" style="background-color:lightgreen">
+                Low
+        </button>
+	<button id="mid" value="2" style="background-color:green">
+                Mid
+        </button>
+	<button id="high" value="3" style="background-color:red">
+                High
+        </button>
+	<button id="refresh" value="refresh" style="background-color:orange">
+                Update
+        </button>
+        <button id="RAZflt" value="refresh" style="color: #ffffff; background-color:blue">
+                RAZ Filter
+        </button>
+	<br>
+	<label id="message" value="message" style="background-color:transparent; margin-left: 70px; display: block; width: 275px;">
+                Message line
+        </label>
+
+
+</div>
+<link rel="stylesheet" type="text/css" href="jsoneditor/jsoneditor.css"/>
+<script src="jsoneditor/jsoneditor.js"></script>
+
+<div id="jsoneditor"></div>
+
+
+<script>
+document.getElementById('absent').addEventListener('click',function() {setspeed(0);});
+document.getElementById('low').addEventListener('click',function() {setspeed(1);});
+document.getElementById('mid').addEventListener('click',function() {setspeed(2);});
+document.getElementById('high').addEventListener('click',function(){setspeed(3)});
+document.getElementById('refresh').addEventListener('click',function(){init();});
+document.getElementById('RAZflt').addEventListener('click',function(){resetflt();});
+
+  var container = document.getElementById('jsoneditor');
+  var options = {
+    mode: 'view'
+  };
+  var json = '{}';
+  var editor = new jsoneditor.JSONEditor(container, options, json);
+
+</script>
+</html>  
