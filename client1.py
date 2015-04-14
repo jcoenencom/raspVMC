@@ -28,7 +28,6 @@ def sample(sock):
 		for cmd in commands:
 			start = time.time()
 			frame = VMC(cmd)
-			print 'sending command:', binascii.hexlify(cmd),' ',binascii.hexlify(frame.frame),
 	        	sock.sendall(frame.FullFrame())
 #        time.sleep(1)
 
@@ -36,10 +35,8 @@ def sample(sock):
 			amount_received = 0
     
 		       	data = sock.recv(64)
-			print "received ",len(data),binascii.hexlify(data),
 			if len(data) >0:
                                 result = FFrame.search(data)
-				print "match result: ", result
 				if result:
 	                                hexframe = result.group(1)
 #				print 'result of findall received ',len(data),' findall ', binascii.hexlify(hexframe)

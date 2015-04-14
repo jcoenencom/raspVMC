@@ -1,5 +1,5 @@
 #!/bin/bash
-cp VMC.py /usr/lib/pymodules/python2.7/VMC.py
+cp VMC.pyc /usr/lib/pymodules/python2.7/
 cp server.py ..
 chown pi ../server.py
 chmod a+x ../server.py
