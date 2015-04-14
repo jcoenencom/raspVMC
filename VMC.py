@@ -58,7 +58,7 @@ class VMC:
 		self.ck = (173 + ord(self.cmd)) % 256
 		self.frame=chr(0)+self.cmd+chr(0)+chr(self.ck)	#build a command frame NEED TO ESCAPE THE 07 !!!!
 	def CMFrame(self,*arg):
-		escaped = re.compile(b'\x07')
+		Escaped = re.compile(b'\x07')
 		sum = 173 + ord(self.cmd) + len(arg)
 		frame = chr(0)+self.cmd+ chr(len(arg))
 		for var in arg:
@@ -67,7 +67,7 @@ class VMC:
 		self.ck=sum % 256
 		frame += chr(self.ck)
 		self.frame = frame
-#escape.sub(b'\x07\x07',frame)      #finally replacee all 07 by 0707
+#Escape.sub(b'\x07\x07',frame)      #finally replacee all 07 by 0707
 
 
 	def HEXFrame(self):
