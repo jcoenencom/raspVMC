@@ -198,7 +198,7 @@ class VMC:
 		self.fansettings['extractionetat']=ord(self.payload[9])
 		self.objet['config']['ventilateurs']=self.fansettings
 	def Rvalvestat(self):
-		etat = ['Ouvert','Ferme''Inconnu']
+		etat = ['Ouvert','Ferme','Inconnu']
 		self.valvesetat['bypass']=ord(self.payload[0])
 		self.valvesetat['prechauff']=etat[ord(self.payload[1])]
 		self.valvesetat['courantmoteurbypass']=ord(self.payload[2])
