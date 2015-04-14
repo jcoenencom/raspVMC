@@ -13,6 +13,7 @@ import signal
 import os
 import subprocess
 import syslog
+import time
 from stat import *
 
 global server
@@ -31,6 +32,7 @@ global inputs
 def debug(level,*args):
 	
 	if level <= int(debugL):
+		print time.strftime('%d/%m/%y %H:%M:%S',time.localtime()),':',
 		for arg in args:
 			print arg,
 		print
@@ -95,11 +97,10 @@ except:
 	DBGFile = "stdout"
 	print "problem with log"
 
-print DBGFile
 
 #open the serial port attached to the VMC
 
-serialport = string.replace(config.get('VMC','device'),'"','')
+serialport = config.get('VMC','device')
 
 Sport = serial.Serial(port = serialport, baudrate = 9600, timeout = 0.05)
 
@@ -141,9 +142,9 @@ server.listen(5)
 #take care of socat process
 
 try:
-        PTY = string.replace(config.get('socat','PTY'),'"','')
-	SERVER=string.replace(config.get('client','server'),'"','')
-	PORT=string.replace(config.get('server','port'),'"','')
+        PTY = config.get('socat','PTY')
+	SERVER=config.get('client','server')
+	PORT=config.get('server','port')
 	SOCAT=['socat','PTY,mode=666,link='+PTY,'TCP-CONNECT:'+SERVER+':'+PORT]
 	for arg in SOCAT:
 		debug(DBGCONFIG,arg)
