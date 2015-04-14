@@ -18,4 +18,8 @@ chmod a+x /usr/lib/cgi-bin/VMC*.cgi
 cp -r json* /var/www
 chown -R pi /var/www/json*
 
+if [ ! -d "/etc/VMC" ]; then 
+    mkdir "/etc/VMC"
+fi
 
+cp VMC.ini /etc/VMC/
