@@ -2,11 +2,6 @@
 
 import socket
 import sys
-import time
-import binascii
-import re
-import math
-import time
 import string
 import ConfigParser
 import json

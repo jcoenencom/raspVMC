@@ -2,14 +2,8 @@
 
 import socket
 import sys
-import time
-import binascii
 import string
-import re
-import math
-import time
 import json
-import os
 import ConfigParser
 from VMC import VMC
 
@@ -36,11 +30,7 @@ rcvd.getinputs(sock)
 rcvd.getbypass(sock)
 rcvd.getvalve(sock)
 
-#print "Content-Type: application/json"
-#print "Status: 200 OK"
-print "Content-Type: application/json"
-
-print ""
+print "Content-Type: application/json\n\n"
 
 print json.dumps(rcvd.objet,sort_keys=True,indent=4)
 

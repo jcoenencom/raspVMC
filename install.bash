@@ -3,6 +3,7 @@
 #cleanup libraries
 rm /usr/lib/pymodules/python2.7/VMC.*
 cp VMC.pyc /usr/lib/pymodules/python2.7/
+
 #server in /home/pi
 cp server.py ..
 chown pi ../server.py
