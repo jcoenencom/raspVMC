@@ -404,9 +404,7 @@ class VMC:
 			self.datalen=1
 			self.CMFrame(chr(1+int(speed)))
 	                socket.sendall(self.FullFrame())
-			print 'command sent'
 			time.sleep(0.25)
-			print 'calling getfanconfig on socket', socket
 			self.getfanconfig(socket)
 		return self
 

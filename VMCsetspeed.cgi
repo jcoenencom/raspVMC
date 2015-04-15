@@ -14,12 +14,8 @@ from VMC import VMC
 import cgi, cgitb
 
 print "Status: 200 OK"
-print "Content-Type: text/html\r\n\r\n"
-#print "Content-Length: %d" % (len(body))
-#print ""
-#print body
-
-print '<body>'
+print "Content-Type: application/json"
+print ""
 
 form = cgi.FieldStorage()
 
@@ -34,14 +30,17 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Connect the socket to the port where the server is listening
 server_address = (string.replace(config.get('client','server'),'"',''),  int(string.replace(config.get('server','port'),'"','')))
-print >>sys.stderr, 'connecting to %s port %s' % server_address
 sock.connect(server_address)
 
-fspeed=VMC(b'\x99',chr(1+int(speed)))
-#print binascii.hexlify(fspeed.FullFrame())
-try:
-        sock.sendall(fspeed.FullFrame())
-#	print binascii.hexlify(fspeed.FullFrame())
-finally:
-    print 'setting speed to ', speed
-    sock.close()
+vitesse=['Absent','low','mid','high']
+
+if int(speed) in range(0,4):
+
+#	print 'setting Speed to ',vitesse[int(speed)]
+
+	rcvd=VMC().setspeed(sock,int(speed))
+	print json.dumps(rcvd.objet,sort_keys=True,indent=4)
+	sys.stdout.flush()
+else:
+	print "invalid speed value: ", speed, " must be in range [0..3]"
+socket.close()
