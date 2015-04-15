@@ -398,6 +398,19 @@ class VMC:
 
                 return(self)
 
+	def getAll(self,socket):
+		self.getdevinfo(socket)
+		self.getusage(socket)
+		self.getfanstatus(socket)
+		self.getalltemp(socket)
+		self.getconfig(socket)
+		self.getfanconfig(socket)
+		self.getvalve(socket)
+		self.getinputs(socket)
+		self.getbypass(socket)
+		return(self)
+
+
 	def setspeed(self,socket,speed):
 		if speed>=0 and speed<=3:
 			self.cmd=b'\x99'
