@@ -70,7 +70,12 @@ def handler(signum, frame):
 	print 'Signal handler called with signal', signum
 	exit()
 
+def resize(signum, frame):
 
+	y, x = screen.getmaxyx()
+	screen.clear()
+	curses.resizeterm(y, x)
+	screen.refresh()
 
 def scan(dictionary, screen, row, col):
 	tab = 25
@@ -110,6 +115,8 @@ pos['Tsoufflage']=5,0
 
 
 signal.signal(signal.SIGALRM, handler)
+signal.signal(signal.SIGWINCH,resize)
+
 
 HFrame = re.compile('07f0([0-9a-f]+)070f')
 RFrame = re.compile('sending .+')
@@ -120,7 +127,7 @@ config = ConfigParser.RawConfigParser()
 config.read('/etc/VMC/VMC.ini')
 
 
-if len(sys.argv)==2:
+if len(sys.argv)>=2:
 	if sys.argv[1] == "RT":
 		# Create a TCP/IP socket
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -128,6 +135,11 @@ if len(sys.argv)==2:
 		server_address = (string.replace(config.get('client','server'),'"',''),  int(string.replace(config.get('server','port'),'"','')))
 		sock.connect(server_address)
 		realtime = True
+		if len(sys.argv) >2:
+			args = sys.argv[2:]
+		else:
+			args=("FULL")
+
 	elif sys.argv[1] == "-h" or sys.argv[1] == "--help":
 		print "\t"+sys.argv[0]+" -h --help : this information"
 		print "\t"+sys.argv[0]+" logfile name : process the log file"
@@ -141,6 +153,7 @@ if len(sys.argv)==2:
 		print "\tarrow up/down go one line up/down in file, or get next reading in realtime"
 		print "\tpage up/down go 40 log lines up/down"
 		print "\tany key other than 'q', 's', 'g' will get a next reading in real time"
+		print "\tRT additional parameters can be FULL TEMP FAN VALVES USAGE CONFIG INPUTS"
 		exit()
 	else:
 	        logfile=str(sys.argv[1])
@@ -155,6 +168,7 @@ elif len(sys.argv) <= 1:
 
 
 scr = curses.initscr()
+global screen
 screen = curses.newwin(86,100,0,0)
 
 curses.start_color()
@@ -249,7 +263,28 @@ while True:
 
    else:
 #realtime
-	rcvd=VMC().getAll(sock)
+	rcvd=VMC()
+	screen.addstr(1,0,str(args)) 
+	if "FULL" in args:
+		rcvd.getAll(sock)
+	if "TEMP" in args:
+		rcvd.getalltemp(sock)
+	if "FAN" in args:
+		rcvd.getfanstatus(sock)
+	if "BYPASS" in args:
+		rcvd.getbypass(sock)
+	if "INPUTS" in args:
+		rcvd.getinputs(sock)
+	if "VALVES" in args:
+		rcvd.getvalve(sock)
+	if "USAGE" in args:
+		rcvd.getusage(sock)
+	if "CONFIG" in args:
+		rcvd.getconfig(sock)
+		rcvd.getfanconfig(sock)
+		rcvd.getdevinfo(sock)
+		
+	
 	ms=time.time()
  	screen.addstr(2,0, "getting VMC info at "+time.strftime("%d/%m/%y %H:%M:%S.")+str(int(100*(ms - int(ms)))),curses.color_pair(1))
         scan(rcvd.objet,screen,5,0)
