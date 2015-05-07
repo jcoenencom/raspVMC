@@ -101,6 +101,8 @@ def scan(dictionary, screen, row, col):
                 screen.nodelay(0)
                 event = screen.getch()
             row+=1
+    screen.move(row,0)
+    screen.clrtobot()
     screen.refresh()
     return row
 
@@ -163,7 +165,7 @@ realtime = False
 config = ConfigParser.RawConfigParser()
 config.read('/etc/VMC/VMC.ini')
 
-CMD = {'F':'FAN', 'A':'ALL', 'T':'TEMP', 'V':'VALVE', 'U':'USAGE', 'C':'CONFIG', 'I':'INPUTS'}
+CMD = {'F':'FAN', 'A':'ALL', 'T':'TEMP', 'V':'VALVES', 'U':'USAGE', 'C':'CONFIG', 'I':'INPUTS'}
 
 if len(sys.argv)>=2:
     if sys.argv[1] == "RT":
@@ -173,10 +175,11 @@ if len(sys.argv)>=2:
         server_address = (string.replace(config.get('client','server'),'"',''),  int(string.replace(config.get('server','port'),'"','')))
         sock.connect(server_address)
         realtime = True
+	FC=0
         if len(sys.argv) >2:
             args = sys.argv[2:]
         else:
-            args=("FULL")
+            args=["ALL"]
 
     elif sys.argv[1] == "-h" or sys.argv[1] == "--help":
         print ("\t"+sys.argv[0]+" -h --help : this information")
@@ -323,15 +326,15 @@ while True:
 
 
         ms=time.time()
-
-        screen.addstr(2,0, "getting VMC info at "+time.strftime("%d/%m/%y %H:%M:%S.")+str(int(100*(ms - int(ms)))),curses.color_pair(1))
+	FC += 1
+        screen.addstr(2,0, "getting VMC info at "+time.strftime("%d/%m/%y %H:%M:%S.")+str(int(100*(ms - int(ms))))+" FC:"+str(FC),curses.color_pair(1))
 	screen.move(1,0)
         screen.clrtoeol()
 	screen.addstr(1,0,'Commands:'+str(CMD.keys())+'Current:'+str(args))
         scan(rcvd.objet,screen,5,0)
-        rcvd.clear()
+ 	rcvd.clear()
         event = screen.getch()
-	if event > 0:
+	if event > 0 and event < 256:
 	        if event == ord("q"):
         	    curses.endwin()
         	    break
