@@ -258,3 +258,14 @@ while inputs:
         	    debug (DBGFRAME,'sending ',binascii.hexlify(next_msg)," to ",s.getpeername())
         	    s.send(next_msg)
 
+    for s in exceptional:
+                debug( DBGCLIENT,'handling exceptional condition for', s.getpeername())
+        # Stop listening for input on the connection
+                inputs.remove(s)
+                if s in outputs:
+                    outputs.remove(s)
+                s.close()
+
+                # Remove message queue
+                del message_queues[s]
+

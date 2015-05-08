@@ -53,8 +53,20 @@ class VMC:
 			self.cmd = arg.pop(0)		#first argument is command byte
 			self.datalen = len(arg)-1		#number of data byte is number of arguments
 			self.CMFrame(*arg)		
+	def __del___(self):
+		self.object['error']="detructor called"
+
 	def clear(self):
 		self.temperature.clear()
+		self.config.clear()
+		self.device.clear()
+	        self.erreurcodes.clear()
+        	self.fanstatus.clear()
+        	self.usage.clear()
+		self.bypass.clear()
+		self.valvesetat.clear()
+        	self.etatswitches.clear()
+        	self.fansettings.clear()
 	def CFrame(self):
 		self.ck = (173 + ord(self.cmd)) % 256
 		self.frame=chr(0)+self.cmd+chr(0)+chr(self.ck)	#build a command frame NEED TO ESCAPE THE 07 !!!!
@@ -85,7 +97,7 @@ class VMC:
 		sum -= ord(c)		#remove checksum from calculation
 		checksum = chr(sum % 256)
 		if checksum != self.ck:
-			print 'Bad checksum, in frame ', binascii.hexlify(self.frame), ord(self.ck),'Calculated ', ord(checksum) 
+			self.objet['error']= 'Bad checksum, in frame '+binascii.hexlify(self.frame)+ ord(self.ck)+'Calculated '+ ord(checksum) 
 			return -1
 		else:
 			return checksum
@@ -124,7 +136,8 @@ class VMC:
 		self.objet['data']['temperature']=self.temperature
 		return(self.temperature)
 	def firmware(self):
-		self.objet['device']={'firmware':str(ord(self.payload[0]))+'.'+str(ord(self.payload[1])),'name':self.payload[3:]}
+		self.device={'firmware':str(ord(self.payload[0]))+'.'+str(ord(self.payload[1])),'name':self.payload[3:]}
+		self.objet['device']=self.device
 	def Rfanstatus(self):
 		self.fanstatus['soufflagepourcent']=ord(self.payload[0])
 		self.fanstatus['extraitpourcent']=ord(self.payload[1])
@@ -148,7 +161,7 @@ class VMC:
 		self.bypass['facteur']=ord(self.payload[2])
 		self.bypass['periode']=ord(self.payload[3])
 		self.bypass['correction']=ord(self.payload[4])
-		self.bypass['mode']=mode[ord(self.payload[3])]
+		self.bypass['mode']=mode[ord(self.payload[6])]
 		self.objet['data']['bypass']=self.bypass
 		return self.bypass
 	def GConfig(self):
@@ -226,7 +239,7 @@ class VMC:
 
 
 	def default(self,dummy):
-		print "processing for frame ", binascii.hexlify(self.cmd), "not yet impelemented"
+		self.objet['error']= "processing for frame "+ binascii.hexlify(self.cmd)+ "not yet impelemented"
 
 	def gettemp(self,socket):
 		self.cmd = b'\x0f'
@@ -431,5 +444,6 @@ class VMC:
 	valvesetat={}
 	etatswitches={}
 	fansettings=AutoVivification()
+	device={}
 	objet=AutoVivification()
 	getvalue = {b'\x10':tempa,b'\xd2':tempb,b'\x68':firmware, b'\x6a':firmware,b'\x0c':Rfanstatus, b'\xde':Gusage, b'\xe0':Gbypass, b'\xd6':GConfig, b'\xce':Rfansettings, b'\68':firmware, b'\x0e':Rvalvestat, b'\x9c':GRSmode, b'\x04':Retatswitches, b'\xda':erreurs}

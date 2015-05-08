@@ -1,8 +1,14 @@
 #!/bin/bash
 
+#install apache and socat
+
+apt-get update
+apt-get install apache2 socat
+
 #cleanup libraries
 rm /usr/lib/pymodules/python2.7/VMC.*
 cp VMC.pyc /usr/lib/pymodules/python2.7/
+cp VMC.py /usr/lib/pymodules/python2.7/
 
 #server in /home/pi
 cp server.py ..
@@ -34,3 +40,4 @@ if [ ! -d "/etc/VMC" ]; then
 fi
 
 cp VMC.ini /etc/VMC/
+

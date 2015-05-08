@@ -72,9 +72,9 @@ def handler(signum, frame):
 
 def resize(signum, frame):
 
-    y, x = screen.getmaxyx()
+    COLS, LINES = screen.getmaxyx()
     screen.clear()
-    curses.resizeterm(y, x)
+    curses.resizeterm(COLS, LINES)
     screen.refresh()
 
 def scan(dictionary, screen, row, col):
@@ -141,8 +141,9 @@ def topbar_key_handler(key_assign=None, key_dict={}):
         else:
             return eval(key_dict[c])
 
-
-
+global screen
+global COLS
+global LINES
 
 pos={}
 
@@ -207,10 +208,12 @@ elif len(sys.argv) <= 1:
     line = file.readf()
     realtime=False
 
+COLS=140
+LINES=100
 
 scr = curses.initscr()
-global screen
-screen = curses.newwin(86,100,0,0)
+
+screen = curses.newwin(LINES,COLS)
 
 curses.start_color()
 curses.init_pair(1,curses.COLOR_RED,curses.COLOR_YELLOW)
@@ -275,33 +278,42 @@ while True:
                 line = file.readf()
             else:
                 line = file.readb()
+	screen.move(4,0)
+	screen.clrtobot()
         screen.addstr(0,lineno,"line #:"+str(file.offset).ljust(5),curses.A_REVERSE)
-        result = HFrame.search(line)
-        test = RFrame.search(line)
+        result = HFrame.search(line)	#search frame
+        test = RFrame.search(line)	#search sending
         temps = line[0:17]
         if result:
             hexframe = binascii.a2b_hex(result.group(1))
-# check frame type if normal frame process it else just display command
+# check frame type if normal frame process it
             if (ord(hexframe[1])%2 != 1):
+		try:
+			rcvd = VMC(hexframe)
+                except IndexError:
+			# IndexError detected in VMC class display frame and stop
+                      	screen.addstr(3,0, "received at:"+temps+":"+result.group(1).ljust(64),curses.color_pair(3))
+                       	screen.nodelay(0)
 # line "sending to client"
                 if test:
-                    row=5
-                    col=0
-                    try:
-                        rcvd = VMC(hexframe)
-                    except IndexError:
-#       IndexError detected in VMC class display frame and stop
-                        screen.addstr(3,0, "received at:"+temps+":"+result.group(1).ljust(64),curses.color_pair(3))
-                        screen.nodelay(0)
-                    screen.addstr(2,0,"Client frame:"+temps+":"+result.group(1).ljust(64),curses.color_pair(2))
-                    scan(rcvd.objet,screen,row,col)
-                    rcvd.clear()
+                    screen.addstr(2,0,"Client data frame:"+temps+":"+result.group(1).ljust(64),curses.color_pair(2))
+
+		row=5
+		col=0
+                hexframe = binascii.a2b_hex(result.group(1))
+                response = binascii.hexlify(hexframe[1])
+		screen.addstr(1,0,"Response frame: "+response.ljust(10)+" "+temps,curses.color_pair(1))
+                scan(rcvd.objet,screen,row,col)
+		rcvd.clear()
+		rcvd.objet.clear()
 # command frame just display command
             elif (ord(hexframe[1])%2 == 1):
                 hexframe = binascii.a2b_hex(result.group(1))
                 command = binascii.hexlify(hexframe[1])
                 screen.addstr(1,0,"Command frame: "+command.ljust(10)+" "+temps,curses.color_pair(1))
 
+	screen.move(4,0)
+	screen.addstr(4,0,line[0:COLS])
     else:
 #realtime
         rcvd=VMC()
