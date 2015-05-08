@@ -55,6 +55,7 @@ class VMC:
 			self.CMFrame(*arg)		
 	def __del___(self):
 		self.object['error']="detructor called"
+		print "called destructor"
 
 	def clear(self):
 		self.temperature.clear()
@@ -241,174 +242,64 @@ class VMC:
 	def default(self,dummy):
 		self.objet['error']= "processing for frame "+ binascii.hexlify(self.cmd)+ "not yet impelemented"
 
-	def gettemp(self,socket):
-		self.cmd = b'\x0f'
-                self.CFrame()
-		socket.sendall(self.FullFrame())
-		data = socket.recv(64)
-		if len(data) >0:
-			result = FFrame.match(data)
-			self.frame = result.group(1)
-                        self.cmd = self.frame[1]
-                        self.datalen = self.frame[2]
-                        self.ck = self.frame[len(self.frame)-1]
-			if self.Checksum():         #verify the checksum
-				self.Payload()          #extract the payload when checksum OK
-				self.getvalue.get(self.cmd,self.default)(self)
-			
-		return(self) 
 
-        def getusage(self,socket):
-                self.cmd = b'\xdd'
-                self.CFrame()
-                socket.sendall(self.FullFrame())
-                data = socket.recv(64)
-                if len(data) >0:
-                        result = FFrame.match(data)
-                        self.frame = result.group(1)
-                        self.cmd = self.frame[1]
-                        self.datalen = self.frame[2]
-                        self.ck = self.frame[len(self.frame)-1]
-                        if self.Checksum():         #verify the checksum
-                                self.Payload()          #extract the payload when checksum OK
-                                self.getvalue.get(self.cmd,self.default)(self)
-
-                return(self)
-
-        def getfanstatus(self,socket):
-                self.cmd = b'\x0b'
-                self.CFrame()
-                socket.sendall(self.FullFrame())
-                data = socket.recv(64)
-                if len(data) >0:
-                        result = FFrame.match(data)
-                        self.frame = result.group(1)
-                        self.cmd = self.frame[1]
-                        self.datalen = self.frame[2]
-                        self.ck = self.frame[len(self.frame)-1]
-                        if self.Checksum():         #verify the checksum
-                                self.Payload()          #extract the payload when checksum OK
-                                self.getvalue.get(self.cmd,self.default)(self)
-
-                return(self)
-
-        def getalltemp(self,socket):
-                self.cmd = b'\xd1'
+	def GetResp(self,cmd,socket):
+                self.cmd = cmd
                 self.CFrame()
                 socket.sendall(self.FullFrame())
                 data = socket.recv(64)
                 if len(data) >0:
                         result = FFrame.match(data)
                         if result:
-				self.frame = result.group(1)
-                        	self.cmd = self.frame[1]
-                        	self.datalen = self.frame[2]
-                        	self.ck = self.frame[len(self.frame)-1]
-                        	if self.Checksum():         #verify the checksum
-                                	self.Payload()          #extract the payload when checksum OK
-                                	self.getvalue.get(self.cmd,self.default)(self)
+                                self.frame = escaped.sub(b'\x07',result.group(1))
+                                self.cmd = self.frame[1]
+                                self.datalen = self.frame[2]
+                                self.ck = self.frame[len(self.frame)-1]
+                                if self.Checksum():         #verify the checksum
+                                        self.Payload()          #extract the payload when checksum OK
+                                        self.getvalue.get(self.cmd,self.default)(self)
 
+                return(self)
+
+
+	def gettemp(self,socket):
+		self.GetResp('\x0f',socket)
+		return(self) 
+
+        def getusage(self,socket):
+                self.GetResp(b'\xdd',socket)
+                return(self)
+
+        def getfanstatus(self,socket):
+                self.GetResp(b'\x0b',socket)
+                return(self)
+
+        def getalltemp(self,socket):
+                self.GetResp(b'\xd1',socket)
                 return(self)
 
 
         def getconfig(self,socket):
-                self.cmd = b'\xd5'
-                self.CFrame()
-                socket.sendall(self.FullFrame())
-                data = socket.recv(64)
-                if len(data) >0:
-                        result = FFrame.match(data)
-                        self.frame = result.group(1)
-                        self.cmd = self.frame[1]
-                        self.datalen = self.frame[2]
-                        self.ck = self.frame[len(self.frame)-1]
-                        if self.Checksum():         #verify the checksum
-                                self.Payload()          #extract the payload when checksum OK
-                                self.getvalue.get(self.cmd,self.default)(self)
-
+                self.GetResp(b'\xd5',socket)
                 return(self)
 
         def getfanconfig(self,socket):
-                self.cmd = b'\xcd'
-                self.CFrame()
-                socket.sendall(self.FullFrame())
-                data = socket.recv(64)
-                if len(data) >0:
-                        result = FFrame.match(data)
-                        self.frame = result.group(1)
-                        self.cmd = self.frame[1]
-                        self.datalen = self.frame[2]
-                        self.ck = self.frame[len(self.frame)-1]
-                        if self.Checksum():         #verify the checksum
-                                self.Payload()          #extract the payload when checksum OK
-                                self.getvalue.get(self.cmd,self.default)(self)
-
+                self.GetResp(b'\xcd',socket)
                 return(self)
 
         def getvalve(self,socket):
-                self.cmd = b'\x0d'
-                self.CFrame()
-                socket.sendall(self.FullFrame())
-                data = socket.recv(64)
-                if len(data) >0:
-                        result = FFrame.match(data)
-                        self.frame = result.group(1)
-                        self.cmd = self.frame[1]
-                        self.datalen = self.frame[2]
-                        self.ck = self.frame[len(self.frame)-1]
-                        if self.Checksum():         #verify the checksum
-                                self.Payload()          #extract the payload when checksum OK
-                                self.getvalue.get(self.cmd,self.default)(self)
+                self.GetResp(b'\x0d',socket)
                 return(self)
 
         def getdevinfo(self,socket):
-                self.cmd = b'\x69'
-                self.CFrame()
-                socket.sendall(self.FullFrame())
-                data = socket.recv(64)
-                if len(data) >0:
-                        result = FFrame.match(data)
-                        self.frame = result.group(1)
-                        self.cmd = self.frame[1]
-                        self.datalen = self.frame[2]
-                        self.ck = self.frame[len(self.frame)-1]
-                        if self.Checksum():         #verify the checksum
-                                self.Payload()          #extract the payload when checksum OK
-                                self.getvalue.get(self.cmd,self.default)(self)
-
+                self.GetResp(b'\x69',socket)
                 return(self)
 
         def getinputs(self,socket):
-                self.cmd = b'\x03'
-                self.CFrame()
-                socket.sendall(self.FullFrame())
-                data = socket.recv(64)
-                if len(data) >0:
-                        result = FFrame.match(data)
-                        self.frame = result.group(1)
-                        self.cmd = self.frame[1]
-                        self.datalen = self.frame[2]
-                        self.ck = self.frame[len(self.frame)-1]
-                        if self.Checksum():         #verify the checksum
-                                self.Payload()          #extract the payload when checksum OK
-                                self.getvalue.get(self.cmd,self.default)(self)
-
+                self.GetResp(b'\x03',socket)
                 return(self)
         def getbypass(self,socket):
-                self.cmd = b'\xdf'
-                self.CFrame()
-                socket.sendall(self.FullFrame())
-                data = socket.recv(64)
-                if len(data) >0:
-                        result = FFrame.match(data)
-                        self.frame = result.group(1)
-                        self.cmd = self.frame[1]
-                        self.datalen = self.frame[2]
-                        self.ck = self.frame[len(self.frame)-1]
-                        if self.Checksum():         #verify the checksum
-                                self.Payload()          #extract the payload when checksum OK
-                                self.getvalue.get(self.cmd,self.default)(self)
-
+                self.GetResp(b'\xdf',socket)
                 return(self)
 
 	def getAll(self,socket):
