@@ -300,9 +300,13 @@ while True:
 
 		row=5
 		col=0
+		if (rcvd.Checksum() == -1):
+			cksum = "Bad Checksum"
+		else:
+			cksum = "Checksum OK"
                 hexframe = binascii.a2b_hex(result.group(1))
                 response = binascii.hexlify(hexframe[1])
-		screen.addstr(1,0,"Response frame: "+response.ljust(10)+" "+temps,curses.color_pair(1))
+		screen.addstr(1,0,"Response frame: "+response.ljust(10)+cksum+" "+temps,curses.color_pair(1))
                 scan(rcvd.objet,screen,row,col)
 		rcvd.clear()
 		rcvd.objet.clear()
