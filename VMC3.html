@@ -8,6 +8,10 @@
       width: 500px;
       height: 200px;
     }
+    #container div {
+         float: left;
+         height: 30px;
+    }
   </style>
 
 
@@ -62,6 +66,18 @@ function clearCanvas(){
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+function getConfirmation(msg){
+               var retVal = confirm('Do you want to '+msg+' ?');
+               if( retVal == true ){
+//                  document.write ("User wants to continue!");
+                  return true;
+               }
+               else{
+//                  Document.write ("User does not want to continue!");
+                  return false;
+               }
+            }
+
 function action() {
 //	alert("action");
 	count++;
@@ -112,6 +128,29 @@ function resetflt() {
         var ref = (new Date).getTime();
         document.getElementById('message').innerHTML="Reset filter counter";
         httpRequest.open('GET', '/cgi-bin/VMCresetfilter.cgi?time='+ref, false);
+	if (getConfirmation(' reset filter')) {
+        	httpRequest.send(null);
+//	 	alert('reset !');
+	        reply = httpRequest.responseText;
+      	document.getElementById('message').innerHTML=reply;
+	} else {
+		document.getElementById('message').innerHTML='Reset filter canceled';
+//	      alert('Canceled');
+	}
+        init();
+//      switching.src=switchimg[swstate];
+        setTimeout("init()",2000);
+//      switching.src=switchimg[swstate];
+
+}
+
+function setempconfort() {
+        var httpRequest = new XMLHttpRequest();
+        var ref = (new Date).getTime();
+        var result = document.getElementById('result');
+        var temp = result.innerHTML;
+        document.getElementById('message').innerHTML='Changing temp confort to '+temp;
+        httpRequest.open('GET', '/cgi-bin/VMCsetTConf.cgi?tconf='+temp+'&time='+ref, false);
         httpRequest.send(null);
         reply = httpRequest.responseText;
         document.getElementById('message').innerHTML=reply;
@@ -189,6 +228,7 @@ function draw() {
  ctx.strokeText("Bypass: "+Bypass,x+100,y+170);
  ctx.strokeText("mode: "+tin.data.bypass.mode,x+100,y+190);
  ctx.strokeText("T confort "+tin.data.temperature.Tconfort,x+100,y+210);
+ showValue(tin.data.temperature.Tconfort)
  ctx.strokeText("Filtres: "+tin.data.usage.filtres+" Heures",x+100,y+230);
  ctx.font = "12pt Calibri";
  ctx.strokeText("Rndmt/Neuf: "+rndneuf.toFixed(2)+ " %", x+100,y+260);
@@ -300,12 +340,19 @@ function colour() {
 
 }
 
+function showValue(num){
+           var result = document.getElementById('result');     
+           result.innerHTML = num;
+}
+
 </script>  
  </head>  
  <body onload="init()">  
    <canvas id="canvas" width="640" height="540" ></canvas>  
  </body>
 <script type="text/javascript" src="cvi_busy_lib.js"></script> 
+
+
 <div id=buttons">
 	<button id="absent" value="0" style="background-color:yellow; margin-left: 70px;">
 		absent
@@ -329,14 +376,17 @@ function colour() {
 	<label id="message" value="message" style="background-color:transparent; margin-left: 70px; display: block; width: 275px;">
                 Message line
         </label>
-
-
 </div>
+<div id="container">
+    <div><button id="setempconf" value="0" style="background-color:blue; color: white; margin-left: 70px;">Set temp. Confort</div>
+    <div><input type="range" id="sliderBar" min="0" max="30" step="1" value="20" onChange="showValue(this.value);" style="height: 20px; width: 150px; background: #D5CCBB; color: black; background-color: white;margin-left: 20px"/></div>
+    <div id="result" style="height:20px;width:20px;border:1px solid #999"></div>
+</div>
+<div style="clear: both;">
 <link rel="stylesheet" type="text/css" href="jsoneditor/jsoneditor.css"/>
 <script src="jsoneditor/jsoneditor.js"></script>
-
+</div>
 <div id="jsoneditor"></div>
-
 
 <script>
 document.getElementById('absent').addEventListener('click',function() {setspeed(0);});
@@ -345,6 +395,7 @@ document.getElementById('mid').addEventListener('click',function() {setspeed(2);
 document.getElementById('high').addEventListener('click',function(){setspeed(3)});
 document.getElementById('refresh').addEventListener('click',function(){init();});
 document.getElementById('RAZflt').addEventListener('click',function(){resetflt();});
+document.getElementById('setempconf').addEventListener('click',function(){setempconfort();});
 
   var container = document.getElementById('jsoneditor');
   var options = {

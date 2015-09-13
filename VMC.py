@@ -58,16 +58,26 @@ class VMC:
 		print "called destructor"
 
 	def clear(self):
-		self.temperature.clear()
-		self.config.clear()
-		self.device.clear()
-	        self.erreurcodes.clear()
-        	self.fanstatus.clear()
-        	self.usage.clear()
-		self.bypass.clear()
-		self.valvesetat.clear()
-        	self.etatswitches.clear()
-        	self.fansettings.clear()
+		if (self.temperature is not None):
+			self.temperature.clear()
+		if (self.config is not None):
+			self.config.clear()
+		if (self.device is not None):
+			self.device.clear()
+	        if (self.erreurcodes is not None):
+			self.erreurcodes.clear()
+		if (self.fanstatus is not None):
+        		self.fanstatus.clear()
+		if (self.usage is not None):
+        		self.usage.clear()
+		if (self.bypass is not None):
+			self.bypass.clear()
+		if (self.valvesetat is not None):
+			self.valvesetat.clear()
+		if (self.etatswitches is not None):
+	        	self.etatswitches.clear()
+        	if (self.fansettings is not None):
+			self.fansettings.clear()
 	def CFrame(self):
 		self.ck = (173 + ord(self.cmd)) % 256
 		self.frame=chr(0)+self.cmd+chr(0)+chr(self.ck)	#build a command frame NEED TO ESCAPE THE 07 !!!!
@@ -114,6 +124,8 @@ class VMC:
                 for i in range (0,4):
                         key=keys[i]
                         self.temperature[key]=float((ord(self.payload[i])/2)-20)
+		if ((self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) ):
+			self.temperature = None
 		self.objet['data']['temperature']=self.temperature
 		return self.temperature
 	def tempb(self):
@@ -133,7 +145,8 @@ class VMC:
 		self.temperature['capteur']['Tenthaplie'] = float((ord(self.payload[6])/2)-20)
 		self.temperature['capteur']['Tappoint'] = float((ord(self.payload[7])/2)-20)
 		self.temperature['capteur']['Thotte'] = float((ord(self.payload[8])/2)-20)
-
+		if ((self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) ):
+                        self.temperature = None
 		self.objet['data']['temperature']=self.temperature
 		return(self.temperature)
 	def firmware(self):
@@ -144,6 +157,8 @@ class VMC:
 		self.fanstatus['extraitpourcent']=ord(self.payload[1])
 		self.fanstatus['soufflagerpm']=1875000/(ord(self.payload[2])*256+ord(self.payload[3]))
 		self.fanstatus['extraitrpm']=1875000/(ord(self.payload[4])*256+ord(self.payload[5]))
+		if ( (self.fanstatus['soufflagerpm']>3700) or (self.fanstatus['soufflagerpm'] < 0) or (self.fanstatus['extraitrpm'] > 3700) or (self.fanstatus['soufflagerpm']<0)):
+			self.fanstatus = None
 		self.objet['data']['ventilateurs']=self.fanstatus
 		return self.fanstatus
 	def Gusage(self):
@@ -263,7 +278,9 @@ class VMC:
 
 
 	def gettemp(self,socket):
-		self.GetResp('\x0f',socket)
+		retval = None
+		while (retval is None):
+			retval=self.GetResp('\x0f',socket)
 		return(self) 
 
         def getusage(self,socket):
@@ -271,11 +288,15 @@ class VMC:
                 return(self)
 
         def getfanstatus(self,socket):
-                self.GetResp(b'\x0b',socket)
+		retval = None
+		while (retval is None):
+	                retval=self.GetResp(b'\x0b',socket)
                 return(self)
 
         def getalltemp(self,socket):
-                self.GetResp(b'\xd1',socket)
+		retval = None
+		while (retval is None):
+	                retval=self.GetResp(b'\xd1',socket)
                 return(self)
 
 
@@ -323,6 +344,17 @@ class VMC:
 	                socket.sendall(self.FullFrame())
 			time.sleep(0.25)
 			self.getfanconfig(socket)
+		return self
+
+	def setTconfort(self,socket,tconf):
+		if ((tconf < 30) and (tconf > 0)):
+			self.cmd=b'\xd3'
+                        self.datalen=1
+			tbyte = (int(tconf)+20)*2
+                        self.CMFrame(chr(tbyte))
+                        socket.sendall(self.FullFrame())
+                        time.sleep(0.25)
+			self.getalltemp(socket)
 		return self
 
 
