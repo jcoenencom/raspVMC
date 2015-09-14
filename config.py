@@ -59,6 +59,12 @@ config.add_section("server")
 config.set('server', 'bind', bind)
 config.set('server','port',port)
 
+ctrlport=raw_input("enter port number for telnet remote control (def=10002):")
+if (ctrlport is ''):
+	ctrlport='10002'
+config.add_section('control')
+config.set('control','port',ctrlport)
+
 
 server=raw_input("server address for clients (blank for this machine : ")
 if (server is ''):
@@ -74,11 +80,25 @@ socat='*'
 while (socat not in yesno):
         socat=raw_input("Use socat to define virtual port (fhem client) (Y/N): ")
 if (socat is 'Y'):
-	virtty=raw_input("Enter the Virtual port filename (eg. /tmp/ttyVMC): ")
+	virtty=raw_input("Enter the Virtual port filename (def. /tmp/ttyVMC): ")
 	if (virtty is ''):
 		virtty='/tmp/ttyVMC'
 	config.add_section('socat')
 	config.set('socat','PTY',virtty)
+
+
+logfile=raw_input("log file name (def=/var/log/VMClog.log): ")
+
+if (logfile is ''):
+	logfile='/var/log/VMClog.log'
+
+level=raw_input("debug level (2=config, 3=client, 8=frames, def=3): ")
+
+if (level is ''):
+	level='3'
+config.add_section('debug')
+config.set('debug','log',logfile)
+config.set('debug','level',level)
 
 mysql='*'
 
