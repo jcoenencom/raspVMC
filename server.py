@@ -25,6 +25,7 @@ global DBGCLIENT
 global DBGCONFIG
 global DBGFRAME
 global DBGFile
+global dbgfd
 global DBG
 global outputs
 global inputs
@@ -149,10 +150,12 @@ except ConfigParser.NoSectionError, ConfigParser.NoOptionError:
 
 try:
 	DBGFile = config.get('DEBUG','log')
-	sys.stdout = open(DBGFile,'a')
+	dbgfd=open(DBGFile,'a')
+	sys.stdout = dbgfd
 
 except:
 	DBGFile = "stdout"
+	dbgfd=sys.stdout
 	print "problem with log"
 
 
@@ -316,25 +319,30 @@ while inputs:
         	if CComd:
                 	debug(DBGCONFIG,"Request for control command ",CComd," from ", s.getpeername())
             	# return message queue size
-			if CComd[0:4]=='size':
+			if CComd[0:4]=='help':
+				s.send(" available commands: help, size, debug lvl, moni, moff, quit, exit, abort \n")
+			elif CComd[0:4]=='size':
 				one = str(messages.qsize())
         	            	s.send("There are "+one+" messages in the queue\n")
 			elif CComd[0:5]=='debug':
 				debugL = int(CComd[6])
 				debug(DBGCONFIG,'Change Debug level to ',debugL,' immediate')
-			elif CComd[0:4]=='quit':
+			elif ((CComd[0:4]=='quit') or (CComd[0:4]=='exit')):
 				debug(DBGCONFIG,'closing', s.getpeername(), 'after user request')
 				if s in outputs:
 					outputs.remove(s)
 				inputs.remove(s)
+				sys.stdout=dbgfd                  #make sure stdout goes back to log file before closing socket
 				s.close()
 				del s
 				Ctrlconn = None
 			elif CComd[0:4]=='moni':
 				debug(DBGCONFIG,'monitoring turned on')
+				sys.stdout=Ctrlconn.makefile('w')
 				dgbsocket=s
 			elif CComd[0:4]=='moff':
 				debug(DBGCONFIG,'monitoring turned off')
+				sys.stdout=dbgfd
 				dbgsocket=None
 			elif CComd[0:5]=='abort':
                                 debug(DBGCONFIG,'terminate server after user request')
