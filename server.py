@@ -142,14 +142,14 @@ config.read('/etc/VMC/VMC.ini')
 
 # get debug level set to 0 if not defined
 try:
-        debugL = config.get('DEBUG','level')
+        debugL = config.get('debug','level')
 
 except ConfigParser.NoSectionError, ConfigParser.NoOptionError:
         debugL=0
 
 
 try:
-	DBGFile = config.get('DEBUG','log')
+	DBGFile = config.get('debug','log')
 	dbgfd=open(DBGFile,'a')
 	sys.stdout = dbgfd
 
@@ -199,14 +199,14 @@ syslog.syslog('Starting NEW VMC server on device'+serialport+', Debug to:'+DBGFi
 # Create a TCP/IP socket
 # get server information from configuration
 try:
-        config.get('CCEASE','port')
-        CCPort = int(string.replace(config.get('CCEASE','port'),'"',''))
+        config.get('ConfoSense','port')
+        CCPort = int(string.replace(config.get('ConfoSense','port'),'"',''))
 except:
         CCPort = 10001
 
 try:
-	config.get('CONTROL','port')
-	CTRLPORT = int(string.replace(config.get('CONTROL','port'),'"',''))
+	config.get('control','port')
+	CTRLPORT = int(string.replace(config.get('Control','port'),'"',''))
 except:
 	CTRLPORT = 10002
 
@@ -241,7 +241,7 @@ dbgsocket = None
 #take care of socat process
 
 try:
-        PTY = config.get('socat','PTY')
+        PTY = config.get('socat','pty')
 	SERVER=config.get('client','server')
 	PORT=config.get('server','port')
 	SOCAT=['socat','PTY,mode=666,link='+PTY,'TCP-CONNECT:'+SERVER+':'+PORT]
@@ -254,7 +254,7 @@ except:
 	e = sys.exc_info()[0]
         print "error: %s" % e
 
-	syslog.syslog('VMCserver cannot start socat '+str(SOCAT))
+	syslog.syslog('VMCserver cannot start socat (maybe not configured)')
 
 
 # Sockets from which we expect to read
