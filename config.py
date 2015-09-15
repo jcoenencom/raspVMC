@@ -38,7 +38,7 @@ i=0
 for dev in TTYs:
 	if (i!=VDEV):
 		print i,': ',dev
-		i+=1
+	i+=1
 print i,': Do not use Confosense'
 CDEV=i+1
 while (CDEV>i):
