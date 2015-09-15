@@ -39,11 +39,24 @@ else
 	fi
    done
 fi
-echo configuring the station
+echo configuring the station (VMC.ini.new)
 ./config.py
 
-echo patching inittab
+echo installing configuration file 
+
+if [ ! -d "/etc/VMCY" ]; then
+  sudo mkdir /etc/VMC
+fi
+
+if [ -e "/etc/VMC/VMC.ini" ]; then
+  echo save old VMC.ini to /etc/VMC/VMC.ini.old
+  sudo mv /etc/VMC/VMC.ini /etc/VMC/VMC.ini.old
+fi
+sudo cp VMC.ini.new /etc/VMC/VMC.ini
+
+echo patching inittab automatic restart in case of crash
 sed -i '/server.py/ c\vm:2345:respawn:\/home\/pi\/raspVMC-master\/server.py >>\/var\/log\/VMCerr.log 2>\&1/' /etc/inittab
+echo activating the server
 sudo init q
 echo cleanup
 rm raspVMC.zip
