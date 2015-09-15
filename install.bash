@@ -50,7 +50,7 @@ echo configuring the station in VMC.ini.new
 
 echo installing configuration file 
 
-if [ ! -d "/etc/VMCY" ]; then
+if [ ! -d "/etc/VMC" ]; then
   sudo mkdir /etc/VMC
 fi
 
