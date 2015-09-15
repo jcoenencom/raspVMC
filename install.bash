@@ -3,6 +3,13 @@ echo first of all update all packages on the pi
 sudo apt-get update
 sudo apt-get upgrade
 
+echo Check apache2 instalation
+
+if ( ! dpkg -s apache2 2> /dev/null | grep Status ); then
+	echo apache2 not install proceeding with installation
+	sudo apt-get install apache2 apache2-utils
+fi
+
 if ( ! dpkg -s python-serial 2> /dev/null | grep Status); then
 echo python serial not installed, installing it
 sudo apt-get install python-serial
