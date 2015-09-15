@@ -216,7 +216,7 @@ CCserver.setblocking(0)
 CCserver_address = (bind, CCPort)
 CCserver.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 CCserver.bind(CCserver_address)
-syslog.syslog('Starting VMC server for CCEASE on IP address:'+str(CCserver_address)+' port '+str(CCPort))
+syslog.syslog('Starting VMC server for ConfoSense on IP address:'+str(CCserver_address)+' port '+str(CCPort))
 
 # Listen for incoming connections
 
