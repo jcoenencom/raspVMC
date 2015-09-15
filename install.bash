@@ -10,6 +10,13 @@ if ( ! dpkg -s apache2 2> /dev/null | grep Status ); then
 	sudo apt-get install apache2 apache2-utils libapache2-mod-php5 php5
 fi
 
+echo check if socat is installed
+if ( ! dpkg -s socat 2> /dev/null | grep Status); then
+        echo socat not installed, installing it
+        sudo apt-get install socat
+fi
+
+
 if ( ! dpkg -s python-serial 2> /dev/null | grep Status); then
 echo python serial not installed, installing it
 sudo apt-get install python-serial
