@@ -79,7 +79,7 @@ def response(Sport):
            #frames = pdata.findall(bread)
 	   frame = re.search(b'(\x07\xf0.{3}(?:[^\x07]|(?:\x07\x07))*\x07\x0f)',bread,flags=re.S)
            if frame:       # we have frames
-                   debug(DBGFRAME,len(frame.group(1)), 'frame received from VMConly one expected from read ')
+                   debug(DBGFRAME,len(frame.group()), 'frames received from VMC only one is expected from theread ')
                    #for frame in frames:
                    # need to be check for consistency of the sender, if it does not exist drop the frame
                    debug(DBGFRAME, "frame received from VMC stored in client queue ", binascii.hexlify(frame.group(1)))
@@ -372,7 +372,7 @@ while inputs:
 			frame = re.search(b'(\x07\xf0.{3}(?:[^\x07]|(?:\x07\x07))*\x07\x0f)',CCmsg)
 			# debug(DBGCLIENT,"CCEase RX:", binascii.hexlify(CComd), "Buffer :",binascii.hexlify(CCmsg))
 			if frame:
-				debug(DBGFRAME,"CCEASE Request for    ",binascii.hexlify(frame.group(1))," from ", s.getpeername())
+				debug(DBGFRAME,"ConfoSense Request for    ",binascii.hexlify(frame.group(1))," from ", s.getpeername())
 				messages.put((s,frame.group(1)))
 				CCmsg = ""
                 else:
