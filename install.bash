@@ -64,6 +64,10 @@ echo patching inittab automatic restart in case of crash
 sed -i '/server.py/ c\vm:2345:respawn:\/home\/pi\/raspVMC-master\/server.py >>\/var\/log\/VMCerr.log 2>\&1/' /etc/inittab
 echo activating the server
 sudo init q
+
+echo installing web pages and cgi
+sudo cp VMC?.html /var/www
+sudo cp *.cgi /usr/lib/cgi-bin
 echo cleanup
 rm raspVMC.zip
 exit
