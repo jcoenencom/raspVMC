@@ -1,9 +1,8 @@
 #!/bin/bash
-#pythonpre requisite
-#sudo apt-get install python-serial
 echo first of all update all packages on the pi
-#sudo apt-get update
-#sudo apt-get upgrade
+sudo apt-get update
+sudo apt-get upgrade
+
 if ( ! dpkg -s python-serial 2> /dev/null | grep Status); then
 echo python serial not installed, installing it
 sudo apt-get install python-serial
