@@ -7,7 +7,7 @@ echo Check apache2 instalation
 
 if ( ! dpkg -s apache2 2> /dev/null | grep Status ); then
 	echo apache2 not install proceeding with installation
-	sudo apt-get install apache2 apache2-utils
+	sudo apt-get install apache2 apache2-utils libapache2-mod-php5 php5
 fi
 
 if ( ! dpkg -s python-serial 2> /dev/null | grep Status); then
