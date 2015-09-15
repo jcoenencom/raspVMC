@@ -65,9 +65,10 @@ sed -i '/server.py/ c\vm:2345:respawn:\/home\/pi\/raspVMC-master\/server.py >>\/
 echo activating the server
 sudo init q
 
-echo installing web pages and cgi
+echo installing web pages cgi and VMC library
 sudo cp VMC?.html /var/www
 sudo cp *.cgi /usr/lib/cgi-bin
+sudo cp VMC.pyc /usr/lib/pymodules/python2.7/VMC.pyc
 echo cleanup
 rm raspVMC.zip
 exit
