@@ -39,7 +39,7 @@ else
 	fi
    done
 fi
-echo configuring the station (VMC.ini.new)
+echo configuring the station in VMC.ini.new
 ./config.py
 
 echo installing configuration file 
