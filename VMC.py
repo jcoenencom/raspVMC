@@ -123,7 +123,7 @@ class VMC:
                 keys = ['Tairneuf', 'Tsoufflage', 'Trepris','Textrait']
                 for i in range (0,4):
                         key=keys[i]
-                        self.temperature[key]=float((ord(self.payload[i])/2)-20)
+                        self.temperature[key]=float((ord(self.payload[i])/2.0)-20)
 		if ((self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) ):
 			self.temperature = None
 		self.objet['data']['temperature']=self.temperature
@@ -133,7 +133,7 @@ class VMC:
 		mode = ['absent','present']
 		for i in range (0,5):
 	                key=keys[i]
-	                self.temperature[key]=float((ord(self.payload[i])/2)-20)
+	                self.temperature[key]=float((ord(self.payload[i])/2.0)-20)
 		ttemp = ord(self.payload[5])
 		self.temperature['capteur']['Tairneuf'] = mode[ttemp&1]
 		self.temperature['capteur']['Tsoufflage'] = mode[(ttemp&2)/2]
