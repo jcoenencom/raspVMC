@@ -28,7 +28,7 @@ VDEV=i
 while (VDEV>=i):
         VDEV=input("Select the device connecting the VMC to the raspberry pi: ")
 
-print 'ConfoSense connected on device ',TTYs[VDEV]
+print 'VMC is connected on device ',TTYs[VDEV]
 
 config.add_section('VMC')
 config.set('VMC','device',TTYs[VDEV])
