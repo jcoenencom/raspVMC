@@ -1,0 +1,24 @@
+# Created by FHEM/98_SVG.pm, 2015-05-12 18:56:34
+set terminal png transparent size <SIZE> crop
+set output '<OUT>.png'
+set xdata time
+set timefmt "%Y-%m-%d_%H:%M:%S"
+set xlabel " "
+set title 'Températures'
+set ytics 
+set y2tics 
+set grid ytics
+set ylabel "Temperature"
+set y2label "Temperature"
+
+#FileLog_VMC 4:VMC.Temp_Abluft\x3a::
+#FileLog_VMC 4:VMC.Temp_Zuluft\x3a::
+#FileLog_VMC 4:VMC.Temp_Aussen\x3a::
+#FileLog_VMC 4:VMC.Temp_Fortluft\x3a::
+#FileLog_VMC 4:VMC.Bypass_Stufe\x3a::
+
+plot "<IN>" using 1:2 axes x1y2 title ' Repris' ls l0 lw 1 with lines,\
+     "<IN>" using 1:2 axes x1y2 title 'Soufflé' ls l1 lw 1 with lines,\
+     "<IN>" using 1:2 axes x1y2 title 'Neuf' ls l3 lw 1 with lines,\
+     "<IN>" using 1:2 axes x1y2 title 'Extrait' ls l4 lw 1 with lines,\
+     "<IN>" using 1:2 axes x1y1 title 'Bypass' ls l7 lw 1 with lines

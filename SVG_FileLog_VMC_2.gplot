@@ -1,0 +1,18 @@
+# Created by FHEM/98_SVG.pm, 2015-05-13 13:31:30
+set terminal png transparent size <SIZE> crop
+set output '<OUT>.png'
+set xdata time
+set timefmt "%Y-%m-%d_%H:%M:%S"
+set xlabel " "
+set title 'Fan speed'
+set ytics 
+set y2tics 
+set grid ytics
+set ylabel "RPM"
+set y2label "RPM"
+
+#FileLog_VMC 4:VMC.UPM_Abluft\x3a::
+#FileLog_VMC 4:VMC.UPM_Zuluft\x3a::
+
+plot "<IN>" using 1:2 axes x1y2 title 'Admission' ls l1 lw 1 with lines,\
+     "<IN>" using 1:2 axes x1y2 title 'Extraction' ls l0 lw 1 with lines
