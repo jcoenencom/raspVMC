@@ -37,11 +37,13 @@ else
 			echo add source in apt source file
 			echo "deb https://debian.fhem.de/stable ./" | sudo tee -a /etc/apt/sources.list
 		fi
+		sudo apt-get update
 		echo Check if apt-transport-https is installed
 		if ( ! dpkg -s apt-transport-https 2> /dev/null | grep Status ); then
 			echo add https transport
 			sudo apt-get install apt-transport-https
 		fi
+		sudo sh -c '(echo "Acquire::https::debian.fhem.de::Verify-Peer \"false\";") > /etc/apt/apt.conf.d/30nohttps'
 		echo installing fhem package
 		sudo apt-get install fhem
 		echo patching fhem config file for VMC
