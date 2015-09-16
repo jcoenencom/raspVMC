@@ -85,8 +85,14 @@ if (socat is 'Y'):
 		virtty='/tmp/ttyVMC'
 	config.add_section('socat')
 	config.set('socat','PTY',virtty)
+	file = open('fhem.cfg','r')
+	filedata = file.read()
+	file.close()
 
-
+	text = filedata.replace('/tmp/ttyVMC',virtty)
+	file = open('fhem.cfg','w')
+	file.write(text)
+	file.close()
 logfile=raw_input("log file name (def=/var/log/VMClog.log): ")
 
 if (logfile is ''):

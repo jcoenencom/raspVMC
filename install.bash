@@ -44,6 +44,7 @@ else
 		fi
 		echo installing fhem package
 		sudo apt-get install fhem
+		echo patching fhem config file for VMC
 		OK="1"
 	elif [ "$INST" != "N" ]; then
 		echo " reply Y or N please"
@@ -55,7 +56,7 @@ fi
 echo configuring the station in VMC.ini.new
 ./config.py
 
-echo installing configuration file 
+echo installing configuration files 
 
 if [ ! -d "/etc/VMC" ]; then
   sudo mkdir /etc/VMC
@@ -67,6 +68,12 @@ if [ -e "/etc/VMC/VMC.ini" ]; then
 fi
 sudo cp VMC.ini.new /etc/VMC/VMC.ini
 
+if [ -e /opt/fhem/fhem.cfg ]; then
+#file exist check if VMC already defined (normally should be adapted with device as stated in config run)
+	if [! grep VMC /opt/fhem/fhem.cfg ]; then
+		cat fhem.cfg >> /opt/fhem/fhem.cfg
+	fi
+fi
 echo patching inittab automatic restart in case of crash
 if (! grep -q server.py /etc/inittab ); then
         echo "vm:2345:respawn:/home/pi/raspVMC-master/server.py >>/var/log/VMCerr.log 2>&1" | sudo tee -a /etc/inittab
