@@ -80,7 +80,7 @@ echo patching inittab automatic restart in case of crash
 if (! grep -q server.py /etc/inittab ); then
         echo "vm:2345:respawn:/home/pi/raspVMC-master/server.py >>/var/log/VMCerr.log 2>&1" | sudo tee -a /etc/inittab
 else
-        sed -i '/server.py/ c\vm:2345:respawn:\/home\/pi\/raspVMC-master\/server.py >>\/var\/log\/VMCerr.log 2>\&1/' /etc/inittab
+        sudo sed -i '/server.py/ c\vm:2345:respawn:\/home\/pi\/raspVMC-master\/server.py >>\/var\/log\/VMCerr.log 2>\&1/' /etc/inittab
 fi
 echo activating the server
 sudo init q
