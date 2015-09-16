@@ -14,3 +14,17 @@ Download the code from Github
 
 unzip it and run install.bash from the directory
 
+The installation will install the following things
+
+updates the libraries
+install python-serial moddule
+apache2 & php: the web server that will serve the ventilation pages
+socat : serial connector, used to connect ConfSense unit and FHEM driver
+FHEM: perl written domotica program (www.fhem.de), a VMC instance is provided (see on http:raspberry:8083/fhem?room=VMC)
+      The software provides graphical display of periodically read temperatures and fans speed, it uses its own driver
+
+A line is inserted in inittab to restart the program in case of crash
+
+At the end of the install process "init q" is issued to fire up the server
+
+stderr is redirected to /var/log/VMCerr.log (crash log)
