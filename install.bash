@@ -90,5 +90,5 @@ sudo cp VMC?.html /var/www
 sudo cp *.cgi /usr/lib/cgi-bin
 sudo cp VMC.pyc /usr/lib/pymodules/python2.7/VMC.pyc
 echo cleanup
-rm raspVMC.zip
+rm ../raspVMC.zip
 exit
