@@ -73,7 +73,9 @@ sudo cp VMC.ini.new /etc/VMC/VMC.ini
 if [ -e /opt/fhem/fhem.cfg ]; then
 #file exist check if VMC already defined (normally should be adapted with device as stated in config run)
 	if (! grep VMC /opt/fhem/fhem.cfg ); then
-		sudo cat fhem.cfg >> /opt/fhem/fhem.cfg
+		cat fhem.cfg | sudo tee -a /opt/fhem/fhem.cfg
+		sudo cp SVG_FileLog_VMC_* /opt/fhem/www/gplot/
+
 	fi
 fi
 echo patching inittab automatic restart in case of crash
