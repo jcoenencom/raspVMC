@@ -75,7 +75,8 @@ if [ -e /opt/fhem/fhem.cfg ]; then
 	if (! grep VMC /opt/fhem/fhem.cfg ); then
 		cat fhem.cfg | sudo tee -a /opt/fhem/fhem.cfg
 		sudo cp SVG_FileLog_VMC_* /opt/fhem/www/gplot/
-
+		sudo chown fhem /opt/fhem/www/gplot/SVG_FileLog_VMC_*
+		sudo chgrp dialout /opt/fhem/www/gplot/SVG_FileLog_VMC_*
 	fi
 fi
 echo patching inittab automatic restart in case of crash
@@ -92,5 +93,6 @@ sudo cp VMC?.html /var/www
 sudo cp *.cgi /usr/lib/cgi-bin
 sudo cp VMC.pyc /usr/lib/pymodules/python2.7/VMC.pyc
 echo cleanup
-rm ../raspVMC.zip
+cd
+rm raspVMC.zip
 exit
