@@ -90,6 +90,7 @@ sudo init q
 
 echo installing web pages cgi and VMC library
 sudo cp VMC?.html /var/www
+sudo cp -r json* /var/www/
 sudo cp *.cgi /usr/lib/cgi-bin
 sudo chmod a+x /usr/lib/cgi-bin/VMC*
 sudo cp VMC.pyc /usr/lib/pymodules/python2.7/VMC.pyc
