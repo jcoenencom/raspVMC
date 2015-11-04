@@ -229,7 +229,7 @@ class VMC:
 	def Rvalvestat(self):
 		etat = ['Ouvert','Ferme','Inconnu']
 		self.valvesetat['bypass']=ord(self.payload[0])
-		self.valvesetat['prechauff']=etat[ord(self.payload[1])]
+		self.valvesetat['prechauff']=ord(self.payload[1])
 		self.valvesetat['courantmoteurbypass']=ord(self.payload[2])
 		self.valvesetat['courantmoteurprechauf']=ord(self.payload[3])
 		self.objet['data']['valvesetat'] = self.valvesetat
