@@ -142,14 +142,14 @@ config.read('/etc/VMC/VMC.ini')
 
 # get debug level set to 0 if not defined
 try:
-        debugL = config.get('debug','level')
+        debugL = config.get('DEBUG','level')
 
 except ConfigParser.NoSectionError, ConfigParser.NoOptionError:
         debugL=0
 
 
 try:
-	DBGFile = config.get('debug','log')
+	DBGFile = config.get('DEBUG','log')
 	dbgfd=open(DBGFile,'a')
 	sys.stdout = dbgfd
 
