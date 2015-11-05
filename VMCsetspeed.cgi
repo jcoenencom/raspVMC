@@ -38,4 +38,4 @@ if int(speed) in range(0,4):
 	sys.stdout.flush()
 else:
 	print "invalid speed value: ", speed, " must be in range [0..3]"
-socket.close()
+sock.close()
