@@ -28,3 +28,34 @@ A line is inserted in inittab to restart the program in case of crash
 At the end of the install process "init q" is issued to fire up the server
 
 stderr is redirected to /var/log/VMCerr.log (crash log)
+
+Configuration file /etc/VMC/VMC.ini
+
+Sections:
+
+[VMC] defines the serial device where is attached the VMC
+
+[mysql] defines the mysql (if used) information
+
+[server]
+bind => address responding to client (empty means all addresses)
+port => port where clients connect, (sometime 10000 is used be web admin tool)
+
+[client]
+server => defines the address of the server for the clients, this is used by clients running on raspberry not running the server.
+
+[socat]
+PTY defines a virtual port to be used by FHEM
+
+[CCEASE]
+tty defines the serial device to which is attached the CCEASE/Confosense
+port define the server port for the CCEASE connexion
+
+[debug]
+level defines the debug level
+log defines the log file
+
+[knx] definition of the knx interface
+gateway eibd or eibnetmux gateway
+followed by a list of variables from the json exemple
+Tconfort=9/5/0,dpt9     use the json's Tconfort, write to bus GAD 9/5/0 using dpt9 encoding (temperature) 
