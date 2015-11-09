@@ -38,18 +38,19 @@ def encode_dpt9 (state): # 2byte signed float
 
    high = "%x" % (data >> 8)
    low = "%x"% (data & 0xff)
-   value = str(high)+" "+str(low)
-   return value;
+   retval=[high,low]
+
+   return (retval);
 
 def encode_dpt7 (state): # 2byte unsigned int
    high = "%x" % (state >> 8)
    low = "%x"% (state & 0xff)
-   value = str(high)+" "+str(low)
-   return value;
+   retval=[high,low]
+   return (retval);
 
 def encode_dpt1(state):  # 1 bit status (0 or 1)
-	value = str(state)
-	return value;
+	retval = [str(state)]
+	return retval;
 
 config = ConfigParser.RawConfigParser()
 config.optionxform=str
@@ -90,7 +91,7 @@ while i < howmany:
 			value=getFromDict(rcvd.objet,mapList)
 			(gad,type) = gadtype.split(',',1)
 			retval = eval('encode_'+type+'('+str(value)+')')
-			command = (["/usr/local/bin/groupwrite", 'ip:'+config.get('knx','gateway'),gad,retval] )
+			command = (["/usr/local/bin/groupwrite", 'ip:'+config.get('knx','gateway'),gad]+retval )
 			result = subprocess.check_output(command)
 			print "setting ",mapList," Value ",value, command, result
 	sys.stdout.flush()
