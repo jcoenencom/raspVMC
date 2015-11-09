@@ -93,7 +93,7 @@ while i < howmany:
 			retval = eval('encode_'+type+'('+str(value)+')')
 			command = (["/usr/local/bin/groupwrite", 'ip:'+config.get('knx','gateway'),gad]+retval )
 			result = subprocess.check_output(command)
-			print "setting ",mapList," Value ",value, command, result
+			print time.strftime('%d/%m/%y %H:%M:%S',time.localtime()),':',"setting ",mapList," Value ",value, command, result
 	sys.stdout.flush()
 	i +=1
 	time.sleep(timer)
