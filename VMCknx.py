@@ -14,6 +14,15 @@ import subprocess
 import ConfigParser
 from VMC import VMC
 
+def getFromDict(dataDict, mapList):    
+    for k in mapList: dataDict = dataDict[k]
+    return dataDict
+
+# Set a given data in a dictionary with position provided as a list
+def setInDict(dataDict, mapList, value): 
+    for k in mapList[:-1]: dataDict = dataDict[k]
+    dataDict[mapList[-1]] = value
+
 def encode_dpt9 (state): # 2byte signed float
 
    sign = 0x8000 if (state <0) else 0
@@ -29,11 +38,18 @@ def encode_dpt9 (state): # 2byte signed float
 
    high = "%x" % (data >> 8)
    low = "%x"% (data & 0xff)
+   value = str(high)+" "+str(low)
+   return value;
 
-   return high, low;
+def encode_dpt7 (state): # 2byte unsigned int
+   high = "%x" % (state >> 8)
+   low = "%x"% (state & 0xff)
+   value = str(high)+" "+str(low)
+   return value;
 
-
-
+def encode_dpt1(state):  # 1 bit status (0 or 1)
+	value = str(state)
+	return value;
 
 config = ConfigParser.RawConfigParser()
 config.optionxform=str
@@ -62,27 +78,21 @@ elif len(sys.argv) == 1:
 	timer=1
 i=0
 while i < howmany:
-	rcvd=VMC().gettemp(sock)
-	rcvd.getfanstatus(sock)
-	rcvd.getusage(sock)
-	rcvd.getalltemp(sock)
-	rcvd.getconfig(sock)
-	rcvd.getfanconfig(sock)
-	rcvd.getvalve(sock)
-	rcvd.getdevinfo(sock)
-	rcvd.getinputs(sock)
-	rcvd.getbypass(sock)
+# get all paramters from the VMC
+	rcvd=VMC().getAll(sock)
 #        print json.dumps(rcvd.objet,sort_keys=True,indent=4)
 # get the list of options in section knx
 	items=config.options('knx')
 	for item in items:
 		gadtype= config.get('knx',item)
 		if (item != 'gateway'):
+			mapList = item.split('-',5)
+			value=getFromDict(rcvd.objet,mapList)
 			(gad,type) = gadtype.split(',',1)
-			(a,b)= eval('encode_'+type+'('+str(rcvd.objet['data']['temperature'][item])+')')
-			command = (["/usr/local/bin/groupwrite", 'ip:'+config.get('knx','gateway'),gad,a,b] )
+			retval = eval('encode_'+type+'('+str(value)+')')
+			command = (["/usr/local/bin/groupwrite", 'ip:'+config.get('knx','gateway'),gad,retval] )
 			result = subprocess.check_output(command)
-			print command, result
+			print "setting ",mapList," Value ",value, command, result
 	sys.stdout.flush()
 	i +=1
 	time.sleep(timer)
