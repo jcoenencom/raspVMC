@@ -123,9 +123,10 @@ class VMC:
                 keys = ['Tairneuf', 'Tsoufflage', 'Trepris','Textrait']
                 for i in range (0,4):
                         key=keys[i]
+                        if (ord(self.payload[i]) == 0):
+                             self.temperature = None
+                             break
                         self.temperature[key]=float((ord(self.payload[i])/2.0)-20)
-		if ((self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) ):
-			self.temperature = None
 		self.objet['data']['temperature']=self.temperature
 		return self.temperature
 	def tempb(self):
@@ -133,6 +134,9 @@ class VMC:
 		mode = ['absent','present']
 		for i in range (0,5):
 	                key=keys[i]
+                        if (ord(self.payload[i]) == 0):
+                             self.temperature = None
+                             break
 	                self.temperature[key]=float((ord(self.payload[i])/2.0)-20)
 		ttemp = ord(self.payload[5])
 		self.temperature['capteur']['Tairneuf'] = mode[ttemp&1]
@@ -145,8 +149,6 @@ class VMC:
 		self.temperature['capteur']['Tenthaplie'] = float((ord(self.payload[6])/2)-20)
 		self.temperature['capteur']['Tappoint'] = float((ord(self.payload[7])/2)-20)
 		self.temperature['capteur']['Thotte'] = float((ord(self.payload[8])/2)-20)
-		if ((self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) or (self.temperature['Tairneuf'] < -17) ):
-                        self.temperature = None
 		self.objet['data']['temperature']=self.temperature
 		return(self.temperature)
 	def firmware(self):

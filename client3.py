@@ -44,7 +44,6 @@ i=0
 while i < howmany:
 	print 'requesting data ',i
 	rcvd=VMC().getAll(sock)
-	rcvd.getbypass(sock)
 	os.system("clear")
         print json.dumps(rcvd.objet,sort_keys=True,indent=4)
 	sys.stdout.flush()
