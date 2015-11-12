@@ -105,6 +105,3 @@ while i < howmany:
 	i +=1
 	time.sleep(timer)
 sock.close()
-value=100
-retval = eval('encode_dpt5('+str(value)+')')
-print retval
