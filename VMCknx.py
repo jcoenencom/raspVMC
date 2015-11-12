@@ -49,8 +49,15 @@ def encode_dpt7 (state): # 2byte unsigned int
    return (retval);
 
 def encode_dpt1(state):  # 1 bit status (0 or 1)
-	retval = [str(state)]
+
+	retval = [hex(state)]
 	return retval;
+
+def encode_dpt5(state):  # 8 bit unsigned (0..255)
+        retval = [hex(state)]
+        return retval;
+
+
 
 config = ConfigParser.RawConfigParser()
 config.optionxform=str
@@ -98,4 +105,6 @@ while i < howmany:
 	i +=1
 	time.sleep(timer)
 sock.close()
-
+value=100
+retval = eval('encode_dpt5('+str(value)+')')
+print retval
