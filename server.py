@@ -206,7 +206,7 @@ except:
 
 try:
 	config.get('control','port')
-	CTRLPORT = int(string.replace(config.get('Control','port'),'"',''))
+	CTRLPORT = int(string.replace(config.get('control','port'),'"',''))
 except:
 	CTRLPORT = 10002
 
