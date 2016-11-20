@@ -27,6 +27,11 @@ A line is inserted in inittab to restart the program in case of crash
 
 At the end of the install process "init q" is issued to fire up the server
 
+For jessie install VMCserver.service in /etc/systemd/system/  (sudo cp VMCserver.service in /etc/systemd/system/)
+
+
+
+
 stderr is redirected to /var/log/VMCerr.log (crash log)
 
 Configuration file /etc/VMC/VMC.ini
