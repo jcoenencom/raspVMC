@@ -1,0 +1,23 @@
+[Unit]
+Description=VMC python server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/pi/raspVMC-master
+ExecStart=/home/pi/raspVMC-master/server.py
+StandardOutput=syslog
+StandardError=syslog
+
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+Then
+
+sudo systemctl start VMCserver
+
+to activate it.
