@@ -29,8 +29,8 @@ At the end of the install process "init q" is issued to fire up the server
 
 For jessie install VMCserver.service in /etc/systemd/system/  (sudo cp VMCserver.service in /etc/systemd/system/)
 
-
-
+run: sudo systemctl start VMCserver
+To start it up when the configuration has been finalized.
 
 stderr is redirected to /var/log/VMCerr.log (crash log)
 
