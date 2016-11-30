@@ -1,0 +1,15 @@
+[Unit]
+Description=FHEM service
+After=network.target
+Wants=hmland.service
+
+[Service]
+Type=forking
+User=fhem
+Group=dialout
+WorkingDirectory=/opt/fhem
+ExecStart=/usr/bin/perl fhem.pl fhem.cfg
+
+[Install]
+WantedBy=multi-user.target
+
