@@ -171,7 +171,7 @@ class VMC:
 		self.usage['prechauffe']=ord(self.payload[11])*256+ord(self.payload[12])
 		self.usage['antigel']=ord(self.payload[9])*256+ord(self.payload[10])
 		self.usage['bypass']=ord(self.payload[13])*256+ord(self.payload[14])
-		self.usage['vitesse3']=ord(self.payload[17])*256+ord(self.payload[18])
+		self.usage['vitesse3']=ord(self.payload[17])*256*256+ord(self.payload[18])*256+ord(self.payload[19])
 		self.objet['data']['usage']=self.usage
 		return self.usage
 	def Gbypass(self):
