@@ -19,6 +19,7 @@ import httplib
 
 
 print "Content-Type: text/plain"
+print
 # print "-" in case no sensor is implemented
 print "-"
 
