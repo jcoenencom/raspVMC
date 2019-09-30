@@ -431,3 +431,4 @@ while inputs:
 	
         	# Remove message queue
         	del message_queues[s]
+    time.sleep(0.001)
