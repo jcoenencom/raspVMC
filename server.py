@@ -320,7 +320,7 @@ while inputs:
                 	debug(DBGCONFIG,"Request for control command ",CComd," from ", s.getpeername())
             	# return message queue size
 			if CComd[0:4]=='help':
-				s.send(" available commands: help, size, debug lvl, moni, moff, quit, exit, abort \n")
+				s.send(" available commands: help, size, debug lvl, list, moni, moff, quit, exit, abort \n")
 			elif CComd[0:4]=='size':
 				one = str(messages.qsize())
         	            	s.send("There are "+one+" messages in the queue\n")
@@ -344,6 +344,10 @@ while inputs:
 				debug(DBGCONFIG,'monitoring turned off')
 				sys.stdout=dbgfd
 				dbgsocket=None
+                        elif CComd[0:4]=='list':
+                               debug(DBGCONFIG,'List current clients ')
+                               for client in clients :
+                                   debug(DBGCONFIG,'Client: ',client.getpeername(),'\n')
 			elif CComd[0:5]=='abort':
                                 debug(DBGCONFIG,'terminate server after user request')
                                 if s in outputs:
@@ -395,6 +399,7 @@ while inputs:
         	        # A readable client socket has data
 		                debug(DBGFRAME,'received',binascii.hexlify(data),s.getpeername()," from client",s.getpeername()," retained is ",binascii.hexlify(frame.group(1)))
 				messages.put((s,frame.group(1)))  #store in send queue, client and frame
+                                s.send('\x07\xf3')                  # send an ack to client
         	    else:
                	 # Interpret empty result as closed connection
                		debug(DBGCLIENT,'closing', client_address, 'after reading no data')
